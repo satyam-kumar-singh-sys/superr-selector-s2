@@ -1,0 +1,56 @@
+# ---------------------------------------------------------------------------
+# Local-only documentation
+# ---------------------------------------------------------------------------
+# The deployment walkthrough stays on this machine and is never published.
+SETUP_GUIDE.md
+SETUP_GUIDE*.md
+
+# ---------------------------------------------------------------------------
+# Secrets and environment variables — NEVER commit these
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.env
+.envrc
+.env.local
+.env.development
+.env.production
+.secrets
+secrets.json
+*credentials*.json
+.netlify/credentials.json
+
+# ---------------------------------------------------------------------------
+# Netlify / build tooling
+# ---------------------------------------------------------------------------
+.netlify/
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+.npm/
+functions-serve/
+dist/
+build/
+.cache/
+
+# ---------------------------------------------------------------------------
+# OS / editor noise
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# Archives and scratch files
+# ---------------------------------------------------------------------------
+*.zip
+*.log
+tmp/
+scratch/

@@ -1,0 +1,5 @@
+# Route the sync function first, so the catch-all below cannot swallow /api/sync
+/api/sync  /.netlify/functions/sync  200
+
+# Everything else serves the single-page dashboard
+/*  /index.html  200
