@@ -66,7 +66,23 @@ let _stT=null;
 function setStatus(st){const el=document.getElementById('syncSt');if(el){el.textContent=STATUS_TXT[st]||'Saved';el.dataset.st=st;el.title=STATUS_TIP[st]||'';el.parentElement&&(el.parentElement.title=STATUS_TIP[st]||'')}
 const sc=document.getElementById('syncCode');if(sc)sc.textContent=syncCode()}
 function setSync(t){setStatus(t==='Synced'?'synced':t==='Saved'?'saved':'saved')}
-function saveState(now){S.ts=Date.now();try{localStorage.setItem('rr_state_v1',JSON.stringify(S));LS.s('hide',S.hide);LS.s('col',S.col);LS.s('caps2',S.caps);LS.s('picks',S.picks)}catch(e){}setStatus('saving');clearTimeout(_stT);_stT=setTimeout(()=>setStatus(_cloudOK===false?'local':_cloudOK===true?'synced':'saved'),400);clearTimeout(_saveT);_saveT=setTimeout(()=>{try{const h='#s='+b64e(JSON.stringify(S));if(location.hash!==h)history.replaceState(null,'',h)}catch(e){}},250);clearTimeout(_cloudT);_cloudT=setTimeout(cloudPush,800)}
+function isPlainState(){
+try{
+if(S.picks.bat.length||S.picks.bowl.length)return false;
+if(S.caps.bat!==DEF.caps.bat||S.caps.bowl!==DEF.caps.bowl)return false;
+if(JSON.stringify(S.sort)!==JSON.stringify(DEF.sort))return false;
+const f=S.f||{};
+if((f.q||'')!=='')return false;
+if((f.pool||'el')!=='el')return false;
+if((f.cty||'')!=='')return false;
+if((f.av||'')!=='')return false;
+if(String(f.mp??'100')!==String(DEF.f.mp))return false;
+if(String(f.ov10??'3')!==String(DEF.f.ov10))return false;
+return true;
+}catch(e){return true}}
+function saveState(now){S.ts=Date.now();try{localStorage.setItem('rr_state_v1',JSON.stringify(S));LS.s('hide',S.hide);LS.s('col',S.col);LS.s('caps2',S.caps);LS.s('picks',S.picks)}catch(e){}setStatus('saving');clearTimeout(_stT);_stT=setTimeout(()=>setStatus(_cloudOK===false?'local':_cloudOK===true?'synced':'saved'),400);clearTimeout(_saveT);_saveT=setTimeout(()=>{try{const base=location.pathname+location.search;
+if(isPlainState()){if(location.hash.indexOf('#s=')===0)history.replaceState(null,'',base);}
+else{const h='#s='+b64e(JSON.stringify(S));if(location.hash!==h)history.replaceState(null,'',h);}}catch(e){}},250);clearTimeout(_cloudT);_cloudT=setTimeout(cloudPush,800)}
 async function cloudPush(){if(_cloudOK===false){setStatus('local');return}setStatus('syncing');const miss=()=>{_cloudOK=false;setStatus('local')};const softFail=()=>setStatus(_cloudOK===true?'error':'local');try{const c=syncCode();const r=await fetch('/api/sync?code='+encodeURIComponent(c),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)});if(r.status===404||r.status===405||r.status===501)return miss();if(!r.ok)return softFail();const j=await r.json().catch(()=>null);if(!j||j.ok!==true)return softFail();_cloudOK=true;setStatus('synced')}catch(e){softFail()}}
 async function cloudPull(){try{const c=syncCode();const r=await fetch('/api/sync?code='+encodeURIComponent(c));if(r.status===404)return null;if(!r.ok)return null;const o=await r.json();_cloudOK=true;return o&&o.picks?o:null}catch(e){return null}}
 function applyState(o){const n=norm(o);S.v=n.v;S.hide=n.hide;S.col=n.col;S.sort=n.sort;S.lim=n.lim;S.caps=n.caps;S.picks=n.picks;S.f=n.f;S.ts=n.ts||Date.now();try{localStorage.setItem('rr_state_v1',JSON.stringify(S))}catch(e){}syncUI();render();board()}

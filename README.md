@@ -133,6 +133,11 @@ Opening the dashboard gives you a six-character code. Enter the same code on ano
 shortlist, filters and caps follow you; state is also mirrored into the URL hash and `localStorage`, so a
 single browser works even with no backend at all.
 
+The address bar follows the same rule: **the URL stays clean** (`https://your-site.netlify.app/`) until
+there is something worth sharing. Pick a player or change a filter and a `#s=...` fragment appears; clear
+the shortlist and it disappears again. The fragment is just base64-encoded view state — filters, caps,
+picks — with no identifiers and no tracking, so it is safe to paste into a submission form either way.
+
 The badge next to it is live, not decoration:
 
 | Badge | Meaning |
